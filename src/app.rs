@@ -1,3 +1,5 @@
+use crossterm::event::KeyCode;
+
 pub struct App {
     pub tick_rate_milliseconds: u64,
     pub should_quit: bool,
@@ -5,6 +7,15 @@ pub struct App {
 }
 
 impl App {
+    pub fn handle_keys(&mut self, key: KeyCode) {
+        match key {
+            KeyCode::Char('q') => {
+                self.should_quit = true;
+            }
+            _ => {}
+        }
+    }
+
     pub fn new() -> Self {
         Self { ..Self::default() }
     }

@@ -1,17 +1,19 @@
 mod app;
+mod mpc;
+mod ui;
 
 use anyhow::Result;
 use app::App;
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
+    event::{self, DisableMouseCapture, EnableMouseCapture, Event},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use std::{io, sync::Arc, thread, time::Duration};
+use mpc::update_mpd;
+use std::{io, sync::Arc, time::Duration};
 use tokio::sync::Mutex;
 use tui::{
     backend::{Backend, CrosstermBackend},
-    widgets::{Block, Borders},
     Terminal,
 };
 
@@ -27,16 +29,6 @@ async fn main() -> Result<()> {
 
     start_ui(&cloned_app).await?;
     Ok(())
-}
-
-#[tokio::main]
-async fn update_mpd(app: &Arc<Mutex<App>>) {
-    loop {
-        let mut app = app.lock().await;
-
-        app.temp_alternate_state = !app.temp_alternate_state;
-        thread::sleep(Duration::from_millis(800));
-    }
 }
 
 async fn start_ui(app: &Arc<Mutex<App>>) -> Result<()> {
@@ -56,6 +48,7 @@ async fn start_ui(app: &Arc<Mutex<App>>) -> Result<()> {
         LeaveAlternateScreen,
         DisableMouseCapture
     )?;
+
     terminal.show_cursor()?;
     if let Err(err) = res {
         println!("{:?}", err)
@@ -67,25 +60,11 @@ async fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &Arc<Mutex<App>>) 
     loop {
         let mut app = app.lock().await;
 
-        terminal.draw(|f| {
-            let block =
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(match app.temp_alternate_state {
-                        true => "yes",
-                        false => "no",
-                    });
-            f.render_widget(block, f.size());
-        })?;
+        terminal.draw(|f| ui::draw_main(f, &app))?;
         let timeout = Duration::from_millis(app.tick_rate_milliseconds);
         if crossterm::event::poll(timeout)? {
             if let Event::Key(key) = event::read()? {
-                match key.code {
-                    KeyCode::Char('q') => {
-                        app.should_quit = true;
-                    }
-                    _ => {}
-                }
+                app.handle_keys(key.code);
             }
         }
         if app.should_quit {
