@@ -1,6 +1,7 @@
 mod app;
 mod mpc;
 mod ui;
+mod utils;
 
 use anyhow::Result;
 use app::App;

@@ -1,9 +1,13 @@
+use std::path::PathBuf;
+
 use crossterm::event::KeyCode;
+
+use crate::utils;
 
 pub struct App {
     pub tick_rate_milliseconds: u64,
     pub should_quit: bool,
-    pub temp_alternate_state: bool,
+    pub songs_root_path: PathBuf,
 }
 
 impl App {
@@ -26,7 +30,7 @@ impl Default for App {
         App {
             tick_rate_milliseconds: 250,
             should_quit: false,
-            temp_alternate_state: true,
+            songs_root_path: PathBuf::from(utils::return_songs_root_path().unwrap()),
         }
     }
 }
