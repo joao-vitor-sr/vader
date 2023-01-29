@@ -1,7 +1,7 @@
 use anyhow::{bail, Result};
 use std::{
     env::var,
-    fs::{self, read_dir, File},
+    fs::{self, File},
     io::{BufRead, BufReader},
     path::Path,
 };
@@ -26,6 +26,10 @@ pub fn return_entries(path: &Path) -> Vec<EntrySong> {
     for entry in fs::read_dir(path).unwrap() {
         let entry = entry.unwrap();
         let entry_path = entry.path();
+
+        if entry_path.file_name().unwrap().to_str().unwrap()[0..1] == "."[..] {
+            continue;
+        }
 
         if entry_path.is_dir() {
             entries.push(EntrySong {
