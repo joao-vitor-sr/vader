@@ -1,10 +1,46 @@
 use anyhow::{bail, Result};
 use std::{
     env::var,
-    fs::File,
+    fs::{self, read_dir, File},
     io::{BufRead, BufReader},
     path::Path,
 };
+
+use crate::{app::EntrySong, mpc::SongInfo};
+
+pub fn return_song_from_path(path: &Path) -> Option<SongInfo> {
+    if path.is_dir() {
+        return None;
+    }
+
+    let song = SongInfo {
+        file: path.to_str().unwrap().to_string(),
+        title: Some("funny title".to_string()),
+        artist: Some("funny artist".to_string()),
+    };
+    Some(song)
+}
+
+pub fn return_entries(path: &Path) -> Vec<EntrySong> {
+    let mut entries = vec![];
+    for entry in fs::read_dir(path).unwrap() {
+        let entry = entry.unwrap();
+        let entry_path = entry.path();
+
+        if entry_path.is_dir() {
+            entries.push(EntrySong {
+                dir: Some(entry_path),
+                song: None,
+            });
+        } else {
+            entries.push(EntrySong {
+                dir: None,
+                song: Some(return_song_from_path(&entry_path).unwrap()),
+            });
+        }
+    }
+    entries
+}
 
 pub fn return_songs_root_path() -> Result<String> {
     let bail_msg = "Unable to get mpd path";

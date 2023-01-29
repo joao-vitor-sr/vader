@@ -1,8 +1,9 @@
 use tui::{
     backend::Backend,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
+    style::{Color, Style},
     text::{Span, Spans},
-    widgets::{Block, Borders, Paragraph},
+    widgets::{Block, Borders, List, ListItem, Paragraph},
     Frame,
 };
 
@@ -25,8 +26,32 @@ pub fn draw_main<B: Backend>(f: &mut Frame<B>, app: &App) {
 }
 
 fn draw_list_songs<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {
-    let block = Block::default().borders(Borders::ALL).title("Songs");
-    f.render_widget(block, chunk);
+    let no_song_message = Span::from("No song found");
+    let mut items = vec![];
+
+    if app.entries.is_empty() {
+        items.push(ListItem::new(no_song_message));
+    } else {
+        for entry in &app.entries {
+            if let Some(dir) = &entry.dir {
+                items.push(ListItem::new(Span::styled(
+                    dir.file_name().unwrap().to_str().unwrap(),
+                    Style::default().fg(Color::Yellow),
+                )));
+            } else if let Some(song) = &entry.song {
+                items.push(ListItem::new(Span::styled(
+                    match &song.title {
+                        Some(title) => title,
+                        None => &app.current_song.file,
+                    },
+                    Style::default().fg(Color::Green),
+                )));
+            }
+        }
+    }
+
+    let list = List::new(items).block(Block::default().borders(Borders::ALL));
+    f.render_widget(list, chunk);
 }
 
 fn draw_info_song<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {
