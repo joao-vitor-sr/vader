@@ -1,4 +1,5 @@
 mod app;
+mod handlers;
 mod mpc;
 mod ui;
 mod utils;
@@ -10,6 +11,7 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
+use handlers::handler;
 use mpc::update_mpd;
 use std::{io, sync::Arc, time::Duration};
 use tokio::sync::Mutex;
@@ -65,7 +67,7 @@ async fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &Arc<Mutex<App>>) 
         let timeout = Duration::from_millis(app.tick_rate_milliseconds);
         if crossterm::event::poll(timeout)? {
             if let Event::Key(key) = event::read()? {
-                app.handle_keys(key.code);
+                handler(key.code, &mut app);
             }
         }
         if app.should_quit {
