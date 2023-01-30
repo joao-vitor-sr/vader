@@ -16,7 +16,9 @@ pub fn handler(key: KeyCode, app: &mut App) {
                         app.parents_indeces.push(i as u32);
                         app.selected_entry = None;
                     }
-                    None => {}
+                    None => {
+                        app.push_song_from_entries(i);
+                    }
                 }
             }
         }

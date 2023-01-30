@@ -1,5 +1,7 @@
 use anyhow::{bail, Result};
+use mpd::Song;
 use std::{
+    collections::BTreeMap,
     env::var,
     fs::{self, File},
     io::{BufRead, BufReader},
@@ -72,4 +74,26 @@ pub fn return_songs_root_path() -> Result<String> {
     }
 
     bail!(bail_msg)
+}
+
+pub fn convert_song_info_into_song(song_info: &SongInfo) -> Song {
+    let mut tags = BTreeMap::new();
+    tags.insert(
+        "Artist".to_string(),
+        match &song_info.artist {
+            Some(artist) => artist.clone(),
+            None => "".to_string(),
+        },
+    );
+    let song = Song {
+        file: song_info.file.clone(),
+        name: None,
+        title: song_info.title.clone(),
+        last_mod: None,
+        duration: None,
+        place: None,
+        range: None,
+        tags,
+    };
+    song
 }

@@ -1,16 +1,15 @@
 use crate::app::App;
-use mpd::{Client, State};
+use mpd::State;
 use std::{sync::Arc, thread, time::Duration};
 use tokio::sync::Mutex;
 
 #[tokio::main]
 pub async fn update_mpd(app: &Arc<Mutex<App>>) {
-    let mut client = Client::connect("127.0.0.1:6600").unwrap();
     loop {
         let mut app = app.lock().await;
 
         // Song
-        let current_song = client.currentsong().unwrap();
+        let current_song = app.mpd_conn.currentsong().unwrap();
 
         if let Some(song) = current_song {
             app.current_song.file = song.file;
@@ -22,7 +21,7 @@ pub async fn update_mpd(app: &Arc<Mutex<App>>) {
         }
 
         // Status
-        let current_status = client.status().unwrap();
+        let current_status = app.mpd_conn.status().unwrap();
         app.status.volume = current_status.volume;
         app.status.repeat = current_status.repeat;
         app.status.random = current_status.random;
@@ -39,7 +38,7 @@ pub struct StatusInfo {
     pub repeat: bool,
     pub random: bool,
     pub single: bool,
-    pub state: State
+    pub state: State,
 }
 
 impl Default for StatusInfo {
@@ -49,11 +48,12 @@ impl Default for StatusInfo {
             repeat: false,
             random: false,
             single: false,
-            state: State::Stop
+            state: State::Stop,
         }
     }
 }
 
+#[derive(Clone)]
 pub struct SongInfo {
     pub file: String,
     pub title: Option<String>,
