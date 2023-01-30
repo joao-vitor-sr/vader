@@ -11,8 +11,11 @@ pub struct App {
     pub current_song: SongInfo,
     pub status: StatusInfo,
     pub entries: Vec<EntrySong>,
-    pub selected_song: Option<usize>,
+    pub selected_entry: Option<usize>,
     pub route: Route,
+    pub depth: u8,
+    pub parents_indeces: Vec<u32>,
+    pub parent_path: PathBuf,
 }
 
 pub enum Route {
@@ -34,14 +37,17 @@ impl Default for App {
     fn default() -> App {
         let root_path = PathBuf::from(utils::return_songs_root_path().unwrap());
         App {
-            selected_song: None,
+            parents_indeces: vec![],
+            selected_entry: None,
             entries: return_entries(&root_path),
             status: StatusInfo::default(),
             current_song: SongInfo::default(),
             tick_rate_milliseconds: 250,
             should_quit: false,
-            songs_root_path: root_path,
+            songs_root_path: root_path.clone(),
             route: Route::ListSongs,
+            depth: 0,
+            parent_path: root_path,
         }
     }
 }

@@ -51,10 +51,14 @@ fn draw_list_songs<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {
     }
 
     let mut state = ListState::default();
-    state.select(app.selected_song);
+    state.select(app.selected_entry);
 
     let list = List::new(items)
-        .block(Block::default().borders(Borders::ALL))
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title(app.parent_path.to_str().unwrap()),
+        )
         .highlight_style(Style::default().bg(Color::Yellow).fg(Color::Black));
     f.render_stateful_widget(list, chunk, &mut state);
 }
