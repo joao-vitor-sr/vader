@@ -1,4 +1,5 @@
 use anyhow::{bail, Result};
+use audiotags::Tag;
 use mpd::Song;
 use std::{
     collections::BTreeMap,
@@ -15,10 +16,17 @@ pub fn return_song_from_path(path: &Path) -> Option<SongInfo> {
         return None;
     }
 
+    let tag = Tag::default().read_from_path(&path);
+
+    if let Err(_) = tag {
+        return None;
+    }
+
+    let tag = tag.unwrap();
     let song = SongInfo {
         file: path.to_str().unwrap().to_string(),
-        title: Some("funny title".to_string()),
-        artist: Some("funny artist".to_string()),
+        title: Some(tag.title().unwrap().to_string()),
+        artist: Some(tag.artist().unwrap().to_string()),
     };
     Some(song)
 }
@@ -41,7 +49,7 @@ pub fn return_entries(path: &Path) -> Vec<EntrySong> {
         } else {
             entries.push(EntrySong {
                 dir: None,
-                song: Some(return_song_from_path(&entry_path).unwrap()),
+                song: return_song_from_path(&entry_path),
             });
         }
     }

@@ -11,3 +11,4 @@ tui = { version = "0.19.0", features = ["crossterm"], default-features = false }
 crossterm = "0.25.0"
 mpd = "0.0.12"
 tokio = {version =  "1.24.2", features = ["full"] }
+audiotags = "0.4.1"
