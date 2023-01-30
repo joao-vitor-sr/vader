@@ -50,15 +50,16 @@ pub fn handler(key: KeyCode, app: &mut App) {
             };
         }
         k if common_keys::up_event(k) => {
+            let l = app.entries.len();
             match app.selected_entry {
                 None => {
-                    app.selected_entry = Some(app.entries.len() - 1);
+                    app.selected_entry = Some(l - 1);
                 }
                 Some(i) => {
                     if i > 0 {
                         app.selected_entry = Some(i - 1);
                     } else {
-                        app.selected_entry = Some(app.entries.len() - 1);
+                        app.selected_entry = Some(l - 1);
                     }
                 }
             };
