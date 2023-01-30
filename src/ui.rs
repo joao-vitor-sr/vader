@@ -3,7 +3,7 @@ use tui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     text::{Span, Spans},
-    widgets::{Block, Borders, List, ListItem, Paragraph},
+    widgets::{Block, Borders, List, ListItem, ListState, Paragraph},
     Frame,
 };
 
@@ -50,8 +50,13 @@ fn draw_list_songs<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {
         }
     }
 
-    let list = List::new(items).block(Block::default().borders(Borders::ALL));
-    f.render_widget(list, chunk);
+    let mut state = ListState::default();
+    state.select(app.selected_song);
+
+    let list = List::new(items)
+        .block(Block::default().borders(Borders::ALL))
+        .highlight_style(Style::default().bg(Color::Yellow).fg(Color::Black));
+    f.render_stateful_widget(list, chunk, &mut state);
 }
 
 fn draw_info_song<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {

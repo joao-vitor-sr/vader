@@ -29,6 +29,7 @@ pub async fn update_mpd(app: &Arc<Mutex<App>>) {
         app.status.single = current_status.single;
         app.status.state = current_status.state;
 
+        drop(app);
         thread::sleep(Duration::from_millis(800));
     }
 }
