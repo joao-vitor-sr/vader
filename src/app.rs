@@ -8,6 +8,7 @@ use std::path::PathBuf;
 
 pub struct App {
     pub tick_rate_milliseconds: u64,
+    pub search_mode: bool,
     pub should_quit: bool,
     pub songs_root_path: PathBuf,
     pub current_song: SongInfo,
@@ -19,6 +20,7 @@ pub struct App {
     pub parents_indeces: Vec<u32>,
     pub parent_path: PathBuf,
     pub mpd_conn: Client,
+    pub search_input: String,
 }
 
 pub enum Route {
@@ -71,6 +73,8 @@ impl Default for App {
             route: Route::ListSongs,
             depth: 0,
             parent_path: root_path,
+            search_mode: false,
+            search_input: "".to_string(),
         }
     }
 }

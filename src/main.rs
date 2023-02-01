@@ -67,7 +67,11 @@ async fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &Arc<Mutex<App>>) 
         let timeout = Duration::from_millis(app.tick_rate_milliseconds);
         if crossterm::event::poll(timeout)? {
             if let Event::Key(key) = event::read()? {
-                handler(key.code, &mut app);
+                if app.search_mode {
+                    handlers::search::handler(key.code, &mut app);
+                } else {
+                    handler(key.code, &mut app);
+                }
             }
         }
         if app.should_quit {

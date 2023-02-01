@@ -22,7 +22,19 @@ pub fn draw_main<B: Backend>(f: &mut Frame<B>, app: &App) {
 
     draw_list_songs(f, app, horizontal_chunks[0]);
     draw_mpd_info(f, app, horizontal_chunks[1]);
-    draw_info_song(f, app, chunks[1]);
+
+    if app.search_mode {
+        draw_search_input(f, app, chunks[1]);
+    } else {
+        draw_info_song(f, app, chunks[1]);
+    }
+}
+
+fn draw_search_input<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {
+    let input =
+        Paragraph::new(app.search_input.as_ref()).block(Block::default().borders(Borders::ALL));
+    f.set_cursor(chunk.x + app.search_input.len() as u16 + 1, chunk.y + 1);
+    f.render_widget(input, chunk);
 }
 
 fn draw_list_songs<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {
