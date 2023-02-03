@@ -47,9 +47,13 @@ pub fn return_entries(path: &Path) -> Vec<EntrySong> {
                 song: None,
             });
         } else {
+            let song = return_song_from_path(&entry_path);
+            if let None = song {
+                continue;
+            }
             entries.push(EntrySong {
                 dir: None,
-                song: return_song_from_path(&entry_path),
+                song
             });
         }
     }
