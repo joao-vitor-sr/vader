@@ -69,8 +69,6 @@ impl App {
                 if let Some(i) = self.return_next_entry_index(pos, e, text) {
                     self.selected_entry = Some(i);
                     break;
-                } else {
-                    continue;
                 }
             }
         } else {
@@ -81,8 +79,6 @@ impl App {
                 if let Some(i) = self.return_next_entry_index(pos, e, text) {
                     self.selected_entry = Some(i);
                     break;
-                } else {
-                    continue;
                 }
             }
         }
