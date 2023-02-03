@@ -37,19 +37,22 @@ pub fn handler(key: KeyCode, app: &mut App) {
         }
 
         k if common_keys::down_event(k) => {
-            let next_i = app.selected_entry + 1;
-            if next_i == app.entries.len() {
-                app.selected_entry = 0;
-            } else {
-                app.selected_entry = next_i;
+            if !app.entries.is_empty() {
+                let next_index = app.selected_entry + 1;
+                if next_index > app.entries.len() - 1 {
+                    app.selected_entry = 0;
+                } else {
+                    app.selected_entry = next_index;
+                }
             }
         }
         k if common_keys::up_event(k) => {
-            let l = app.entries.len();
-            if app.selected_entry > 0 {
-                app.selected_entry = app.selected_entry - 1;
-            } else {
-                app.selected_entry = l - 1;
+            if !app.entries.is_empty() {
+                if app.selected_entry > 0 {
+                    app.selected_entry = app.selected_entry - 1;
+                } else {
+                    app.selected_entry = app.entries.len() - 1;
+                }
             }
         }
         _ => {}
