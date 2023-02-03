@@ -14,7 +14,7 @@ pub struct App {
     pub current_song: SongInfo,
     pub status: StatusInfo,
     pub entries: Vec<EntrySong>,
-    pub selected_entry: Option<usize>,
+    pub selected_entry: usize,
     pub route: Route,
     pub depth: u8,
     pub parents_indeces: Vec<u32>,
@@ -56,28 +56,24 @@ impl App {
     }
 
     pub fn search_entry_by_text(&mut self, text: &str, rev: bool) -> Option<()> {
-        let i = match self.selected_entry {
-            Some(expr) => expr,
-            None => 0,
-        };
         if !rev {
             for (pos, e) in self.entries.iter().enumerate() {
-                if pos <= i {
+                if pos <= self.selected_entry {
                     continue;
                 }
 
                 if let Some(i) = self.return_next_entry_index(pos, e, text) {
-                    self.selected_entry = Some(i);
+                    self.selected_entry = i;
                     break;
                 }
             }
         } else {
             for (pos, e) in self.entries.iter().enumerate().rev() {
-                if pos >= i {
+                if pos >= self.selected_entry {
                     continue;
                 }
                 if let Some(i) = self.return_next_entry_index(pos, e, text) {
-                    self.selected_entry = Some(i);
+                    self.selected_entry = i;
                     break;
                 }
             }
@@ -111,7 +107,7 @@ impl Default for App {
         App {
             mpd_conn: Client::connect("127.0.0.1:6600").unwrap(),
             parents_indeces: vec![],
-            selected_entry: None,
+            selected_entry: 0,
             entries: return_entries(&root_path),
             status: StatusInfo::default(),
             current_song: SongInfo::default(),
