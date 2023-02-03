@@ -2,10 +2,16 @@ use crossterm::event::KeyCode;
 
 use crate::{app::App, utils};
 
-use super::common_keys;
+use super::{common_keys, search::exec_search};
 
 pub fn handler(key: KeyCode, app: &mut App) {
     match key {
+        KeyCode::Char('n') => {
+            exec_search(app, false);
+        }
+        KeyCode::Char('N') => {
+            exec_search(app, true);
+        }
         k if common_keys::right_event(k) => {
             if let Some(i) = app.selected_entry {
                 match &app.entries[i].dir {

@@ -11,6 +11,7 @@ pub fn handler(key: KeyCode, app: &mut App) {
             app.should_quit = true;
         }
         KeyCode::Char('/') => {
+            app.search_input = "".to_string();
             app.search_mode = true;
         }
         _ => handle_block(key, app),
