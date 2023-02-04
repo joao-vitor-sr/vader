@@ -7,7 +7,7 @@ use tui::{
     Frame,
 };
 
-use crate::app::App;
+use crate::app::{App, Route};
 
 pub fn draw_main<B: Backend>(f: &mut Frame<B>, app: &App) {
     let chunks = Layout::default()
@@ -21,7 +21,15 @@ pub fn draw_main<B: Backend>(f: &mut Frame<B>, app: &App) {
         .split(chunks[0]);
 
     // draw_list_songs(f, app, horizontal_chunks[0]);
-    draw_songs_table(f, app, horizontal_chunks[0]);
+    match app.route {
+        Route::ListSongs => {
+            draw_songs_table(f, app, horizontal_chunks[0]);
+        }
+        Route::ListQueue => {
+            draw_queue_table(f, app, horizontal_chunks[0]);
+        }
+    }
+
     draw_mpd_info(f, app, horizontal_chunks[1]);
 
     if app.search_mode {
@@ -29,6 +37,54 @@ pub fn draw_main<B: Backend>(f: &mut Frame<B>, app: &App) {
     } else {
         draw_info_song(f, app, chunks[1]);
     }
+}
+
+fn draw_queue_table<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {
+    let mut lines = vec![];
+    for song in &app.queue {
+        let first_field;
+        let mut second_field = "";
+
+        match &song.title {
+            Some(title) => {
+                first_field = title;
+            }
+            None => {
+                first_field = &song.file;
+            }
+        };
+
+        match &song.artist {
+            Some(artist) => {
+                second_field = artist;
+            }
+            None => {}
+        };
+
+        lines.push([first_field, second_field]);
+    }
+
+    let selected_style = Style::default().add_modifier(Modifier::REVERSED);
+    let rows = lines.iter().map(|line| {
+        let height = line
+            .iter()
+            .map(|content| content.chars().filter(|c| *c == '\n').count())
+            .max()
+            .unwrap_or(0)
+            + 1;
+        let cells = line.iter().map(|c| Cell::from(*c));
+        Row::new(cells).height(height as u16)
+    });
+
+    let t = Table::new(rows)
+        .block(Block::default().borders(Borders::ALL))
+        .highlight_style(selected_style)
+        .highlight_symbol(">> ")
+        .widths(&[Constraint::Percentage(50), Constraint::Percentage(50)]);
+
+    let mut state = TableState::default();
+    state.select(Some(app.selected_queue));
+    f.render_stateful_widget(t, chunk, &mut state);
 }
 
 fn draw_songs_table<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {
@@ -144,6 +200,15 @@ fn draw_mpd_info<B: Backend>(f: &mut Frame<B>, app: &App, chunk: Rect) {
         }
         mpd::State::Pause => {
             text.push(Spans::from("Pause"));
+        }
+    }
+
+    match app.route {
+        Route::ListQueue => {
+            text.push(Spans::from("Queue"));
+        }
+        _ => {
+            text.push(Spans::from("Songs"));
         }
     }
 

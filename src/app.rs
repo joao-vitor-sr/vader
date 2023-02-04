@@ -14,7 +14,9 @@ pub struct App {
     pub current_song: SongInfo,
     pub status: StatusInfo,
     pub entries: Vec<EntrySong>,
+    pub queue: Vec<SongInfo>,
     pub selected_entry: usize,
+    pub selected_queue: usize,
     pub route: Route,
     pub depth: u8,
     pub parents_indeces: Vec<u32>,
@@ -25,6 +27,7 @@ pub struct App {
 
 pub enum Route {
     ListSongs,
+    ListQueue,
 }
 
 pub struct EntrySong {
@@ -81,6 +84,10 @@ impl App {
         None
     }
 
+    pub fn clear_queue(&mut self) {
+        self.mpd_conn.clear().unwrap();
+    }
+
     pub fn push_song_from_entries(&mut self, index: usize) {
         let mut song: Option<SongInfo> = None;
         match &self.entries[index].song {
@@ -119,6 +126,8 @@ impl Default for App {
             parent_path: root_path,
             search_mode: false,
             search_input: "".to_string(),
+            queue: vec![],
+            selected_queue: 0,
         }
     }
 }

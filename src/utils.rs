@@ -51,10 +51,7 @@ pub fn return_entries(path: &Path) -> Vec<EntrySong> {
             if let None = song {
                 continue;
             }
-            entries.push(EntrySong {
-                dir: None,
-                song
-            });
+            entries.push(EntrySong { dir: None, song });
         }
     }
     entries
@@ -86,6 +83,18 @@ pub fn return_songs_root_path() -> Result<String> {
     }
 
     bail!(bail_msg)
+}
+
+pub fn convert_song_into_song_info(song: &Song) -> SongInfo {
+    let mut artist = None;
+    if let Some(artist_tag) = song.tags.get("Artist") {
+        artist = Some(artist_tag.to_owned());
+    }
+    SongInfo {
+        file: song.file.to_owned(),
+        title: song.title.to_owned(),
+        artist: artist,
+    }
 }
 
 pub fn convert_song_info_into_song(song_info: &SongInfo) -> Song {

@@ -1,4 +1,4 @@
-use crate::app::App;
+use crate::{app::App, utils};
 use mpd::State;
 use std::{sync::Arc, thread, time::Duration};
 use tokio::sync::Mutex;
@@ -18,6 +18,10 @@ pub async fn update_mpd(app: &Arc<Mutex<App>>) {
             if let Some(artist) = artist {
                 app.current_song.artist = Some(artist.to_owned());
             }
+        } else {
+            app.current_song.file = "".to_string();
+            app.current_song.title = None;
+            app.current_song.artist = None;
         }
 
         // Status
@@ -27,6 +31,12 @@ pub async fn update_mpd(app: &Arc<Mutex<App>>) {
         app.status.random = current_status.random;
         app.status.single = current_status.single;
         app.status.state = current_status.state;
+
+        // queue
+        app.queue = vec![];
+        for s in app.mpd_conn.queue().unwrap() {
+            app.queue.push(utils::convert_song_into_song_info(&s));
+        }
 
         drop(app);
         thread::sleep(Duration::from_millis(800));
