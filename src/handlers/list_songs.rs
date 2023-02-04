@@ -14,7 +14,7 @@ pub fn handler(key: KeyCode, app: &mut App) {
         }
         k if common_keys::right_event(k) => match &app.entries[app.selected_entry].dir {
             Some(dir) => {
-                app.parent_path = dir.clone();
+                app.parent_path = dir.to_owned();
                 app.entries = utils::return_entries(&dir);
                 app.depth = app.depth + 1;
                 app.parents_indeces.push(app.selected_entry as u32);
@@ -29,10 +29,10 @@ pub fn handler(key: KeyCode, app: &mut App) {
                 return;
             }
 
-            app.parent_path = app.parent_path.parent().unwrap().clone().to_path_buf();
+            app.parent_path = app.parent_path.parent().unwrap().to_path_buf();
             app.entries = utils::return_entries(&app.parent_path);
             app.depth = app.depth - 1;
-            app.selected_entry = app.parents_indeces.last().unwrap().clone() as usize;
+            app.selected_entry = app.parents_indeces.last().unwrap().to_owned() as usize;
             app.parents_indeces.pop();
         }
 
