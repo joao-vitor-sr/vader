@@ -1,5 +1,5 @@
 [package]
-name = "vader"
+name = "vader-mpd"
 authors = ["João Vitor Silveira Ribeiro <joaovitorsrs7@gmail.com>"]
 description = "a terminal based mpd client"
 version = "0.1.0"
