@@ -88,7 +88,7 @@ impl App {
         self.mpd_conn.clear().unwrap();
     }
 
-    pub fn push_song_from_entries(&mut self, index: usize) {
+    pub fn push_song_from_entry(&mut self, index: usize) {
         let mut song: Option<SongInfo> = None;
         match &self.entries[index].song {
             Some(song_info) => {

@@ -1,11 +1,24 @@
-use crossterm::event::KeyCode;
-
 use crate::{app::App, utils};
-
+use crossterm::event::KeyCode;
 use super::{common_keys, search::exec_search};
 
 pub fn handler(key: KeyCode, app: &mut App) {
     match key {
+        KeyCode::Char('a') => match &app.entries[app.selected_entry].dir {
+            Some(dir) => {
+                let entries = utils::return_entries(dir);
+                // push songs
+                for entry in entries {
+                    match entry.song {
+                        Some(song) => {
+                            app.push_song(&song);
+                        }
+                        None => {}
+                    }
+                }
+            }
+            None => {}
+        },
         KeyCode::Char('n') => {
             exec_search(app, false);
         }
@@ -21,7 +34,7 @@ pub fn handler(key: KeyCode, app: &mut App) {
                 app.selected_entry = 0;
             }
             None => {
-                app.push_song_from_entries(app.selected_entry);
+                app.push_song_from_entry(app.selected_entry);
             }
         },
         k if common_keys::left_event(k) => {
