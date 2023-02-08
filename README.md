@@ -13,5 +13,5 @@ to build vader:
 git clone https://github.com/joao-vitor-sr/vader
 cd vader
 cargo build --release
-./target/release/vader-mpd
+./target/release/vader
 ```
