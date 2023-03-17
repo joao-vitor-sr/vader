@@ -1,3 +1,4 @@
+Deprecated use [mms](https://github.com/joao-vitor-sr/mms) instead
 # Vader
 The Dark Side of the Force is a pathway to many abilities, some consider to be unnatural.
 
